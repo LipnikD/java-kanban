@@ -1,3 +1,5 @@
+package ru.lipnik.taskmanager.model;
+
 import java.util.Objects;
 
 public class Task {
@@ -7,7 +9,7 @@ public class Task {
     private String description;
     private Status status;
 
-    Task(int code, String name, String description) {
+    public Task(int code, String name, String description) {
         this.id = code;
         this.name = name;
         this.description = description;
