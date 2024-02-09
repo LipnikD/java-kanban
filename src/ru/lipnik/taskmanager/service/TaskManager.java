@@ -19,24 +19,21 @@ public class TaskManager {
     }
 
     public void addTask(Task task) {
-        if (task == null || task.getClass() != Task.class || tasks.containsValue(task)) {
+        if (task == null || tasks.containsValue(task)) {
             return;
         }
         tasks.put(task.getId(), task);
     }
 
     public void addEpic(Epic epic) {
-        if (epic == null || epic.getClass() != Epic.class || epics.containsValue(epic)) {
+        if (epic == null || epics.containsValue(epic)) {
             return;
         }
         epics.put(epic.getId(), epic);
     }
 
     public void addSubtask(Epic epic, Subtask subtask) {
-        if (epic == null || epic.getClass() != Epic.class) {
-            return;
-        }
-        if (subtask == null || subtask.getClass() != Subtask.class || subtasks.containsValue(subtask)) {
+        if (subtask == null || epic == null || subtasks.containsValue(subtask)) {
             return;
         }
         addEpicSubtask(epic, subtask);
@@ -175,7 +172,7 @@ public class TaskManager {
         if (subtask == null || subtask.getClass() != Subtask.class) {
             return;
         }
-        epic.subtasks.remove(subtask);
+        epic.getSubtasks().remove(subtask);
     }
 
     private Epic getSubtaskEpic(int id) {

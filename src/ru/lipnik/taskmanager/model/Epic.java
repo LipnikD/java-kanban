@@ -3,7 +3,7 @@ package ru.lipnik.taskmanager.model;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    public final ArrayList<Subtask> subtasks;
+    private final ArrayList<Subtask> subtasks;
 
     public Epic(int id, String name, String description) {
         super(id, name, description);
@@ -16,7 +16,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epyc{" +
+        return "Epic{" +
                 super.toString() +
                 ", subtasks=" + subtasks +
                 "} ";
