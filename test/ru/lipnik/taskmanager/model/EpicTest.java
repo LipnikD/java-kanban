@@ -62,5 +62,6 @@ class EpicTest {
         taskManager.deleteEpic(summerDriveId);
         assertNull(taskManager.getEpic(summerDriveId), "Ошибка удаления эпика.");
         assertEquals(1, taskManager.getEpics().size(), "Ошибка количества эпиков после удаления.");
+        assertEquals(0, taskManager.getHistory().size(), "Ошибка очистки истории после удаления задач.");
     }
 }

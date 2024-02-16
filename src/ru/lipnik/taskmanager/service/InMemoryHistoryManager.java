@@ -25,4 +25,9 @@ public class InMemoryHistoryManager implements HistoryManager {
             history.removeFirst();
         }
     }
+
+    @Override
+    public <T extends Task> void remove(T t) {
+        history.remove(t);
+    }
 }

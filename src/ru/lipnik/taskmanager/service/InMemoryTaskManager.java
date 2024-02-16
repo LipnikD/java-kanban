@@ -2,10 +2,7 @@ package ru.lipnik.taskmanager.service;
 
 import ru.lipnik.taskmanager.model.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private static int id;
@@ -101,11 +98,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Subtask> getSubtasks(Epic Epic) {
-        if (Epic == null || Epic.getClass() != Epic.class) {
+    public ArrayList<Subtask> getSubtasks(Epic epic) {
+        if (epic == null || epic.getClass() != Epic.class) {
             return null;
         }
-        return Epic.getSubtasks();
+        return epic.getSubtasks();
     }
 
     @Override
@@ -134,7 +131,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTask(int id) {
-        tasks.remove(id);
+        Task task = tasks.get(id);
+        if (task != null) {
+            historyManager.remove(task);
+            tasks.remove(id);
+        }
     }
 
     @Override
@@ -143,7 +144,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic == null) {
             return;
         }
+        historyManager.remove(epic);
         for (Subtask subtask : epic.getSubtasks()) {
+            historyManager.remove(subtask);
             subtasks.remove(subtask.getId());
         }
         epics.remove(id);
@@ -157,6 +160,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         Epic epic = getSubtaskEpic(id);
         if (epic != null) {
+            historyManager.remove(subtask);
             deleteEpicSubtask(epic, subtask);
             subtasks.remove(id);
             updateEpicStatus(epic);
@@ -181,7 +185,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory() {
-        return historyManager.getHistory();
+        return List.copyOf(historyManager.getHistory());
     }
 
     public void updateEpicStatus(Epic epic) {
