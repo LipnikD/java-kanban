@@ -28,7 +28,7 @@ public interface TaskManager {
 
     ArrayList<Epic> getEpics();
 
-    ArrayList<Subtask> getSubtasks(Epic Epic);
+    ArrayList<Subtask> getSubtasks(Epic epic);
 
     void updateTask(Task task);
 
