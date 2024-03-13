@@ -34,8 +34,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         tail = newNode;
         if (oldTail == null) {
             head = newNode;
-        }
-        else {
+        } else {
             oldTail.next = newNode;
         }
         history.put(element.getId(), newNode);
