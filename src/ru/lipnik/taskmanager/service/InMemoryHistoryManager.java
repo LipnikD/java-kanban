@@ -71,13 +71,13 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public <T extends Task> void add(T t) {
-        if (t != null) {
-            Node node = history.get(t.getId());
+    public void add(Task task) {
+        if (task != null) {
+            Node node = history.get(task.getId());
             if (node != null) {
                 removeNode(node);
             }
-            linkLast(t);
+            linkLast(task);
         }
     }
 
