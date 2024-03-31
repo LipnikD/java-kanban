@@ -45,9 +45,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     taskManager.addSubtask(epic, subtask);
                     taskManager.setStatus(subtask, Status.valueOf(status));
                 } else if (type.equals(FileRecordType.HISTORY.name())) {
-                    taskManager.getTask(id);
-                    taskManager.getEpic(id);
-                    taskManager.getSubtask(id);
+                    if (taskManager.getTask(id) == null) {
+                        if (taskManager.getEpic(id) == null) {
+                            taskManager.getSubtask(id);
+                        }
+                    }
                 } else {
                     throw new ManagerRestoreException("Некорректный тип записи в файле данных: " + line);
                 }
