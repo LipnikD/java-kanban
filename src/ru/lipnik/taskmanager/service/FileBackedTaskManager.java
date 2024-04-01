@@ -10,7 +10,7 @@ import java.io.*;
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final File dataStorageFile;
-    final static String CSV_DELIMITER = ";";
+    static final String CSV_DELIMITER = ";";
 
     public FileBackedTaskManager() {
         super();
