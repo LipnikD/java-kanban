@@ -10,15 +10,20 @@ import java.io.*;
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final File dataStorageFile;
-    public static String CSV_DELIMITER = ";";
+    final static String CSV_DELIMITER = ";";
 
     public FileBackedTaskManager() {
         super();
         this.dataStorageFile = new File("./resources/Tasks.csv");
     }
 
-    public static FileBackedTaskManager loadFromFile(File file) {
-        FileBackedTaskManager taskManager = new FileBackedTaskManager();
+    public FileBackedTaskManager(File file) {
+        super();
+        this.dataStorageFile = file;
+    }
+
+    public static FileBackedTaskManager loadFromFile(File file) throws ManagerRestoreException {
+        FileBackedTaskManager taskManager = new FileBackedTaskManager(file);
         Epic epic = null;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line = reader.readLine();
@@ -27,47 +32,48 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 String[] dataParts = line.split(CSV_DELIMITER, -5);
-                String type = dataParts[0];
+                FileRecordType type = FileRecordType.valueOf(dataParts[0]);
                 int id = Integer.parseInt(dataParts[1]);
                 String name = dataParts[2];
                 String description = dataParts[3];
                 String status = dataParts[4];
-                if (type.equals(FileRecordType.TASK.name())) {
-                    Task task = new Task(id, name, description);
-                    taskManager.addTask(task);
-                    taskManager.setStatus(task, Status.valueOf(status));
-                } else if (type.equals(FileRecordType.EPIC.name())) {
-                    epic = new Epic(id, name, description);
-                    taskManager.addEpic(epic);
-                    taskManager.setStatus(epic, Status.valueOf(status));
-                } else if (type.equals(FileRecordType.SUBTASK.name())) {
-                    Subtask subtask = new Subtask(id, name, description);
-                    taskManager.addSubtask(epic, subtask);
-                    taskManager.setStatus(subtask, Status.valueOf(status));
-                } else if (type.equals(FileRecordType.HISTORY.name())) {
-                    if (taskManager.getTask(id) == null) {
-                        if (taskManager.getEpic(id) == null) {
-                            taskManager.getSubtask(id);
+                switch (type) {
+                    case FileRecordType.TASK:
+                        Task task = new Task(id, name, description);
+                        taskManager.addTask(task);
+                        taskManager.setStatus(task, Status.valueOf(status));
+                        break;
+                    case FileRecordType.EPIC:
+                        epic = new Epic(id, name, description);
+                        taskManager.addEpic(epic);
+                        taskManager.setStatus(epic, Status.valueOf(status));
+                    case FileRecordType.SUBTASK:
+                        Subtask subtask = new Subtask(id, name, description);
+                        taskManager.addSubtask(epic, subtask);
+                        taskManager.setStatus(subtask, Status.valueOf(status));
+                    case FileRecordType.HISTORY:
+                        if (taskManager.getTask(id) == null) {
+                            if (taskManager.getEpic(id) == null) {
+                                taskManager.getSubtask(id);
+                            }
                         }
-                    }
-                } else {
-                    throw new ManagerRestoreException("Некорректный тип записи в файле данных: " + line);
+                    default:
+                        throw new ManagerRestoreException("Некорректный тип записи в файле данных: " + line);
                 }
             }
-        } catch (IOException | ManagerSaveException e) {
-            System.out.println(e.getMessage());
-        } catch (ManagerRestoreException e) {
-            System.out.println("Ошибка чтения файла хранения данных : " + e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return taskManager;
     }
 
     public void save() {
-        try (Writer fileWriter = new FileWriter(dataStorageFile)) {
 
-            if (!dataStorageFile.canWrite()) {
-                throw new ManagerSaveException("Файл " + dataStorageFile.getAbsolutePath() + " недоступен для записи.");
-            }
+        if (!dataStorageFile.canWrite()) {
+            throw new ManagerSaveException("Файл " + dataStorageFile.getAbsolutePath() + " недоступен для записи.");
+        }
+
+        try (Writer fileWriter = new FileWriter(dataStorageFile)) {
 
             fileWriter.write(dataHeadersLine() + System.lineSeparator());
 

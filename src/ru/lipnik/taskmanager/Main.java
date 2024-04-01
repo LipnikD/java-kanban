@@ -4,6 +4,7 @@ import ru.lipnik.taskmanager.model.Epic;
 import ru.lipnik.taskmanager.model.Subtask;
 import ru.lipnik.taskmanager.model.Task;
 import ru.lipnik.taskmanager.service.FileBackedTaskManager;
+import ru.lipnik.taskmanager.service.ManagerRestoreException;
 import ru.lipnik.taskmanager.service.TaskManager;
 
 import java.io.File;
@@ -12,7 +13,12 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = FileBackedTaskManager.loadFromFile(new File("./resources/Tasks.csv"));
+        TaskManager taskManager;
+        try {
+            taskManager = FileBackedTaskManager.loadFromFile(new File("./resources/Tasks.csv"));
+        } catch (ManagerRestoreException exception) {
+            taskManager = new FileBackedTaskManager();
+        }
 
         System.out.println("Состояние истории после загрузки данных из файла:");
         System.out.println(taskManager.getHistory());
