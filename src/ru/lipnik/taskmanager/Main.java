@@ -3,14 +3,25 @@ package ru.lipnik.taskmanager;
 import ru.lipnik.taskmanager.model.Epic;
 import ru.lipnik.taskmanager.model.Subtask;
 import ru.lipnik.taskmanager.model.Task;
-import ru.lipnik.taskmanager.service.Managers;
+import ru.lipnik.taskmanager.service.FileBackedTaskManager;
+import ru.lipnik.taskmanager.service.ManagerRestoreException;
 import ru.lipnik.taskmanager.service.TaskManager;
+
+import java.io.File;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = Managers.getDefault();
+        TaskManager taskManager;
+        try {
+            taskManager = FileBackedTaskManager.loadFromFile(new File("./resources/Tasks.csv"));
+        } catch (ManagerRestoreException exception) {
+            taskManager = new FileBackedTaskManager();
+        }
+
+        System.out.println("Состояние истории после загрузки данных из файла:");
+        System.out.println(taskManager.getHistory());
 
         Epic epic1 = new Epic(taskManager.newId(),"Эпик без подзадач",
                 "Описание эпика без подзадач.");
