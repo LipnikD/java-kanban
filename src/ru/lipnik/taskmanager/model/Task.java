@@ -82,7 +82,7 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        if (startTime == null) {
+        if (startTime == null || getDurationToMinutes() == 0) {
             return null;
         }
         return Optional.of(startTime.plus(duration)).orElse(null);
