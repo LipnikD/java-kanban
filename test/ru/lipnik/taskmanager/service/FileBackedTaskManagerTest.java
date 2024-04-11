@@ -1,9 +1,6 @@
 package ru.lipnik.taskmanager.service;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.lipnik.taskmanager.model.Epic;
 import ru.lipnik.taskmanager.model.Subtask;
 import ru.lipnik.taskmanager.model.Task;
@@ -17,7 +14,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-    private final File file = new File("./resources/Test.csv");
+    private static File file = null;
+
+    @BeforeAll
+    public static void beforeAll() {
+        try {
+            file = File.createTempFile( "Test", "csv");
+            file.deleteOnExit();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @BeforeEach
     public void beforeEach() {
