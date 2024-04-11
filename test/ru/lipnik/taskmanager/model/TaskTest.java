@@ -31,6 +31,12 @@ class TaskTest {
         assertEquals(task, savedTask, "Задачи не совпадают.");
         assertNotNull(task.getEndTime(), "Ошибка планирования времени.");
 
+        Task sameTimePlannedTask = new Task(taskManager.newId(), "Test", "Test description");
+        sameTimePlannedTask.setStartTime(LocalDateTime.now().plusDays(4));
+        sameTimePlannedTask.setDurationOfMinutes(1);
+        taskManager.addTask(sameTimePlannedTask);
+        assertNull(taskManager.getTask(sameTimePlannedTask.getId()), "Ошибка контроля пересечения интервалов задач.");
+
         Task badPlannedTask = new Task(taskManager.newId(), "Test period intersection", "");
         badPlannedTask.setStartTime(LocalDateTime.now().plusDays(4).minusHours(2));
         badPlannedTask.setDurationOfMinutes(121);

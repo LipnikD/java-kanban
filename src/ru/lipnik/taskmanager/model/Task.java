@@ -3,7 +3,6 @@ package ru.lipnik.taskmanager.model;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Task {
 
@@ -85,7 +84,7 @@ public class Task {
         if (startTime == null || getDurationToMinutes() == 0) {
             return null;
         }
-        return Optional.of(startTime.plus(duration)).orElse(null);
+        return startTime.plus(duration);
     }
 
     @Override
