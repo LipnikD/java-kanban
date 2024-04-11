@@ -2,7 +2,9 @@ package ru.lipnik.taskmanager.service;
 
 import ru.lipnik.taskmanager.model.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     private static int id;
@@ -10,6 +12,8 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Epic> epics;
     private final HashMap<Integer, Subtask> subtasks;
     private final HistoryManager historyManager;
+    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(
+            Comparator.comparing(task -> Objects.requireNonNullElse(task.getStartTime(), LocalDateTime.MAX)));
 
     public InMemoryTaskManager() {
         id = 1;
@@ -20,11 +24,28 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public boolean intersectionDetected(Task task) {
+        LocalDateTime endTime = task.getEndTime();
+        if (endTime == null) {
+            return false;
+        }
+        LocalDateTime startTime = task.getStartTime();
+        return prioritizedTasks.stream()
+                .filter(t -> !t.equals(task))
+                .filter(t -> t.getEndTime() != null)
+                .filter(t -> t.getStatus() != Status.DONE)
+                .anyMatch(t -> startTime.isBefore(t.getEndTime()) && endTime.isAfter(t.getStartTime()));
+    }
+
+    @Override
     public void addTask(Task task) {
-        if (task == null || tasks.containsValue(task)) {
+        if (task == null || tasks.containsValue(task) || intersectionDetected(task)) {
             return;
         }
         tasks.put(task.getId(), task);
+        if (task.getStartTime() != null) {
+            prioritizedTasks.add(task);
+        }
     }
 
     @Override
@@ -37,11 +58,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addSubtask(Epic epic, Subtask subtask) {
-        if (subtask == null || epic == null || subtasks.containsValue(subtask)) {
+        if (subtask == null || epic == null || subtasks.containsValue(subtask) || intersectionDetected(subtask)) {
             return;
         }
         addEpicSubtask(epic, subtask);
         subtasks.put(subtask.getId(), subtask);
+        if (subtask.getStartTime() != null) {
+            prioritizedTasks.add(subtask);
+            epic.updateStartTimeDuration();
+        }
     }
 
     @Override
@@ -77,12 +102,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Subtask> getEpicSubtasks(int id) {
         if (epics.containsKey(id)) {
-            Epic epic = epics.get(id);
-            ArrayList<Subtask> subtasks = epic.getSubtasks();
-            for (Subtask subtask : subtasks) {
-                historyManager.add(subtask);
-            }
-            return subtasks;
+            return epics.get(id).getSubtasks().stream()
+                    .peek(historyManager::add)
+                    .collect(Collectors.toCollection(ArrayList::new));
         }
         return null;
     }
@@ -90,6 +112,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Task> getTasks() {
         return new ArrayList<>(tasks.values());
+    }
+
+    @Override
+    public TreeSet<Task> getPrioritizedTasks() {
+        return prioritizedTasks;
     }
 
     @Override
@@ -133,6 +160,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTask(int id) {
         Task task = tasks.get(id);
         if (task != null) {
+            prioritizedTasks.remove(task);
             historyManager.remove(id);
             tasks.remove(id);
         }
@@ -147,6 +175,7 @@ public class InMemoryTaskManager implements TaskManager {
         historyManager.remove(id);
         for (Subtask subtask : epic.getSubtasks()) {
             int subtaskId = subtask.getId();
+            prioritizedTasks.remove(subtask);
             historyManager.remove(subtaskId);
             subtasks.remove(subtaskId);
         }
