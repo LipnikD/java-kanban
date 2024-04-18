@@ -1,19 +1,32 @@
 package ru.lipnik.taskmanager.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
 
-    private final int id;
-    private String name;
-    private String description;
-    private Status status;
+    protected final int id;
+    protected String name;
+    protected String description;
+    protected Status status;
+    protected LocalDateTime startTime;
+    protected Duration duration;
 
     public Task(int code, String name, String description) {
         this.id = code;
         this.name = name;
         this.description = description;
         this.status = Status.NEW;
+    }
+
+    public Task(int code, String name, String description, LocalDateTime startTime, long durationOfMinutes) {
+        this.id = code;
+        this.name = name;
+        this.description = description;
+        this.status = Status.NEW;
+        this.startTime = startTime;
+        this.duration = Duration.ofMinutes(durationOfMinutes);
     }
 
     public Integer getId() {
@@ -47,6 +60,33 @@ public class Task {
         this.status = status;
     }
 
+    public void setDurationOfMinutes(long duration) {
+        this.duration = Duration.ofMinutes(duration);
+    }
+
+    public long getDurationToMinutes() {
+        if (duration == null) {
+            return 0;
+        } else {
+            return duration.toMinutes();
+        }
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null || getDurationToMinutes() == 0) {
+            return null;
+        }
+        return startTime.plus(duration);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -66,6 +106,8 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
+                ", startTime=" + startTime +
+                ", duration=" + getDurationToMinutes() +
                 '}';
     }
 }

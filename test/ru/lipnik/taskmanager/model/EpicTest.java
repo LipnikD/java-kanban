@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import ru.lipnik.taskmanager.service.Managers;
 import ru.lipnik.taskmanager.service.TaskManager;
 
+import java.time.LocalDateTime;
+
 class EpicTest {
 
     static TaskManager taskManager;
@@ -19,14 +21,21 @@ class EpicTest {
     @Test
     void complexEpicTest() {
 
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime summerDriveEndTime = now.minusDays(7).plusMinutes(60);
+
         Epic summerDrive = new Epic(taskManager.newId(),"Подготовить машину к лету",
                 "Комплекс мероприятий для комфортного вхождения в летний сезон активного вождения.");
         taskManager.addEpic(summerDrive);
         Subtask tyres = new Subtask(taskManager.newId(), "Купить летние шины",
                 "Необходимо выбрать на Яндекс маркете лучшее предложение и приобрести новые шины");
+        tyres.setStartTime(now.minusDays(7));
+        tyres.setDurationOfMinutes(60);
         taskManager.addSubtask(summerDrive, tyres);
         Subtask inspection = new Subtask(taskManager.newId(), "Провести техосмотр",
                 "Нужно провести регламентный осмотр всех узлов, агрегатов и тех. жидкостей");
+        inspection.setStartTime(now.minusDays(9).minusHours(2));
+        inspection.setDurationOfMinutes(400);
         taskManager.addSubtask(summerDrive, inspection);
         Subtask sound = new Subtask(taskManager.newId(), "Модернизировать аудиосистему",
                 "Установить акустику и необходимые компоненты (усилители, процессор) для дальних поездок");
@@ -38,6 +47,8 @@ class EpicTest {
                 "История возвращается неверно.");
 
         assertEquals(4, taskManager.getHistory().size(), "История возвращается неверно.");
+
+        assertEquals(summerDriveEndTime, summerDrive.getEndTime(), "Ошибка определения времени завершения эпика");
 
         Epic newSchool = new Epic(taskManager.newId(),"Перевести ребенка в новую школу",
                 "Новая более сильная школа - хороший старт в развитии.");

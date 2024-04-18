@@ -7,8 +7,11 @@ import ru.lipnik.taskmanager.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
+
+    boolean intersectionDetected(Task task);
 
     void addTask(Task task);
 
@@ -25,6 +28,8 @@ public interface TaskManager {
     ArrayList<Subtask> getEpicSubtasks(int id);
 
     ArrayList<Task> getTasks();
+
+    TreeSet<Task> getPrioritizedTasks();
 
     ArrayList<Epic> getEpics();
 

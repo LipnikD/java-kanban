@@ -8,6 +8,7 @@ import ru.lipnik.taskmanager.service.ManagerRestoreException;
 import ru.lipnik.taskmanager.service.TaskManager;
 
 import java.io.File;
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -39,9 +40,13 @@ public class Main {
         taskManager.addSubtask(epic2, subtask2);
 
         Task task1 = new Task(taskManager.newId(), "Задача №1", "Описание первой задачи");
+        task1.setStartTime(LocalDateTime.now().plusDays(10));
+        task1.setDurationOfMinutes(240);
         taskManager.addTask(task1);
 
         Task task2 = new Task(taskManager.newId(), "Задача №2", "Описание второй задачи");
+        task2.setStartTime(LocalDateTime.now().plusDays(9));
+        task2.setDurationOfMinutes(2400);
         taskManager.addTask(task2);
 
         Task task3 = new Task(taskManager.newId(), "Задача №Три", "Описание 3 задачи");
@@ -66,5 +71,8 @@ public class Main {
 
         System.out.println("Состояние истории после удаления эпика с подзадачами:");
         System.out.println(taskManager.getHistory());
+
+        System.out.println("Отсортированный по приоритету список задач:");
+        System.out.println(taskManager.getPrioritizedTasks());
     }
 }
