@@ -69,7 +69,7 @@ class TaskTest {
 
         assertNotNull(tasks, "Задачи не возвращаются.");
         assertEquals(3, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.getFirst(), "Задачи не совпадают.");
+        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
 
         Task anotherTask = new Task(taskManager.newId(), "Test addNewTask2", "Test addNewTask2 description");
         taskManager.addTask(anotherTask);

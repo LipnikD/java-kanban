@@ -54,26 +54,26 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     duration = Long.parseLong(dataParts[6]);
                 }
                 switch (type) {
-                    case FileRecordType.TASK:
+                    case TASK:
                         Task task = new Task(id, name, description);
                         task.setStartTime(startTime);
                         task.setDurationOfMinutes(duration);
                         taskManager.addTask(task);
                         taskManager.setStatus(task, Status.valueOf(status));
                         break;
-                    case FileRecordType.EPIC:
+                    case EPIC:
                         epic = new Epic(id, name, description);
                         taskManager.addEpic(epic);
                         taskManager.setStatus(epic, Status.valueOf(status));
                         break;
-                    case FileRecordType.SUBTASK:
+                    case SUBTASK:
                         Subtask subtask = new Subtask(id, name, description);
                         subtask.setStartTime(startTime);
                         subtask.setDurationOfMinutes(duration);
                         taskManager.addSubtask(epic, subtask);
                         taskManager.setStatus(subtask, Status.valueOf(status));
                         break;
-                    case FileRecordType.HISTORY:
+                    case HISTORY:
                         if (taskManager.getTask(id) == null) {
                             if (taskManager.getEpic(id) == null) {
                                 taskManager.getSubtask(id);

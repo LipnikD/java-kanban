@@ -43,7 +43,14 @@ public class EpicsHandler extends Handler {
                 case UNKNOWN:
                     exchange.sendResponseHeaders(404, -1);
             }
+        } catch (IOException exception) {
+            System.out.println("Произошла ошибка ввода-вывода при ответе: " + exception.getMessage());
+            exchange.sendResponseHeaders(500, -1);
+        } catch (Exception exception) {
+            System.out.println("Произошла ошибка при ответе: " + exception.getMessage());
+            exchange.sendResponseHeaders(500, -1);
         } catch (Throwable exception) {
+            System.out.println("Ошибка: " + exception.getMessage());
             exchange.sendResponseHeaders(500, -1);
         }
     }
