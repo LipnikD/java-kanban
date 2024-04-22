@@ -26,7 +26,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         assertNotNull(tasks, "Ошибка получения списка задач.");
         assertEquals(1, tasks.size(), "Некорректное количество задач в списке.");
-        assertEquals(task, tasks.getFirst(), "Задачи в списке отличаются от ожидаемых.");
+        assertEquals(task, tasks.get(0), "Задачи в списке отличаются от ожидаемых.");
     }
 
     @Test
@@ -43,7 +43,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         assertNotNull(epics, "Эпики не возвращаются.");
         assertEquals(1, epics.size(), "Количество эпиков в списке неверное.");
-        assertEquals(epic, epics.getFirst(), "Эпики не совпадают.");
+        assertEquals(epic, epics.get(0), "Эпики не совпадают.");
     }
 
     @Test
@@ -63,6 +63,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         assertNotNull(subTasks, "Подзадачи не возвращаются.");
         assertEquals(1, subTasks.size(), "Количество подзадач в списке неверное.");
-        assertEquals(subtask, subTasks.getFirst(), "Подзадачи не совпадают.");
+        assertEquals(subtask, subTasks.get(0), "Подзадачи не совпадают.");
     }
 }

@@ -133,6 +133,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public ArrayList<Subtask> getSubtasks() {
+        return new ArrayList<>(subtasks.values());
+    }
+
+    @Override
     public void updateTask(Task task) {
         if (task == null || task.getClass() != Task.class || !tasks.containsValue(task)) {
             return;
